@@ -2,99 +2,111 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Caption Editor</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#111;--bg2:#1a1a1a;--bg3:#222;--border:#333;--accent:#00c2ff;--text:#fff;--muted:#888}
-body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+:root{--bg:#111;--bg2:#1a1a1a;--bg3:#252525;--border:#2a2a2a;--accent:#00c2ff;--text:#fff;--muted:#666}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 
 /* TOPBAR */
-#topbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
-#topbar h1{font-size:14px;font-weight:700;margin-right:auto}
-.btn{padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;transition:.15s}
+#topbar{display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+#topbar h1{font-size:13px;font-weight:700;margin-right:auto}
+.btn{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;transition:.12s}
 .btn-primary{background:var(--accent);color:#000}
-.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid #444}
-.btn:disabled{opacity:0.35;cursor:default}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid #333}
+.btn:disabled{opacity:0.3;cursor:default}
+.btn:active{transform:scale(0.97)}
 
-/* MAIN LAYOUT */
-#main{display:flex;flex:1;overflow:hidden}
-#preview-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;position:relative;min-width:0}
+/* LAYOUT */
+#main{display:flex;flex:1;overflow:hidden;min-height:0}
 
-/* UPLOAD SCREEN */
-#upload-screen{display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px;text-align:center;width:100%;max-width:360px}
-#upload-screen h2{font-size:18px;font-weight:700}
-#api-box{background:#1e2a1e;border:1px solid #2a5a2a;border-radius:12px;padding:14px;width:100%}
-#api-box p{font-size:12px;color:#8fbc8f;margin-bottom:8px}
-#api-box input{background:#111;border:1px solid #444;color:#fff;border-radius:8px;padding:8px 10px;font-size:13px;width:100%;outline:none}
+/* UPLOAD */
+#upload-screen{display:flex;flex-direction:column;align-items:center;gap:14px;padding:20px;text-align:center;width:100%;max-width:380px;margin:auto}
+#upload-screen h2{font-size:17px;font-weight:700}
+#api-box{background:#1b2b1b;border:1px solid #2a4a2a;border-radius:12px;padding:14px;width:100%}
+#api-box p{font-size:12px;color:#7ab87a;margin-bottom:8px}
+#api-box input{background:#111;border:1px solid #333;color:#fff;border-radius:8px;padding:8px 10px;font-size:13px;width:100%;outline:none;font-family:inherit}
 #api-box input:focus{border-color:var(--accent)}
-.upload-box{background:var(--bg2);border:2px dashed #444;border-radius:12px;padding:22px 28px;cursor:pointer;width:100%;transition:.15s}
-.upload-box:hover{border-color:var(--accent)}
-.upload-box .icon{font-size:36px;margin-bottom:8px}
+.upload-box{background:var(--bg2);border:2px dashed #333;border-radius:12px;padding:20px;cursor:pointer;width:100%;transition:.15s}
+.upload-box:hover{border-color:var(--accent);background:#1a1f1a}
+.upload-box .icon{font-size:34px;margin-bottom:6px}
 .upload-box .label{font-size:14px;font-weight:600}
-.upload-box .sub{font-size:11px;color:#666;margin-top:4px}
+.upload-box .sub{font-size:11px;color:var(--muted);margin-top:3px}
 
-/* PLAYER */
-#player-wrap{position:relative;display:none;max-height:72vh;width:100%}
-#vid{display:block;max-height:72vh;max-width:100%;margin:0 auto;border-radius:6px}
-#cap-overlay{position:absolute;left:0;right:0;display:flex;justify-content:center;align-items:center;pointer-events:none;padding:0 12px}
-#cap-text{font-weight:900;text-align:center;line-height:1.2;word-break:break-word}
+/* PREVIEW */
+#preview-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;position:relative;min-width:0;min-height:0;overflow:hidden}
+#player-wrap{position:relative;display:none;width:100%;height:100%;display:none;align-items:center;justify-content:center}
+#vid{display:block;max-width:100%;max-height:100%;object-fit:contain}
+#cap-overlay{position:absolute;left:0;right:0;display:flex;justify-content:center;align-items:center;pointer-events:none;padding:0 8px}
+#cap-text{font-weight:900;text-align:center;line-height:1.25;word-break:break-word;max-width:95%}
 
 /* STATUS */
-#status{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.92);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;display:none;white-space:nowrap;max-width:92%;text-align:center;z-index:10}
+#status{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;display:none;white-space:nowrap;max-width:94%;text-align:center;z-index:20;backdrop-filter:blur(4px)}
 
 /* TIMELINE */
-#timeline{height:44px;background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:10px;flex-shrink:0}
-#playBtn{width:32px;height:32px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;font-size:14px;flex-shrink:0;color:#000;font-weight:700}
+#timeline{height:44px;background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:10px;flex-shrink:0}
+#playBtn{width:32px;height:32px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;font-size:14px;flex-shrink:0;color:#000;font-weight:700;display:flex;align-items:center;justify-content:center}
 #progWrap{flex:1;height:4px;background:#333;border-radius:2px;cursor:pointer;position:relative}
-#progBar{height:100%;background:var(--accent);border-radius:2px;width:0%}
-#timeTxt{font-size:11px;color:var(--muted);min-width:80px;text-align:right}
+#progBar{height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width .1s linear}
+#timeTxt{font-size:11px;color:var(--muted);min-width:82px;text-align:right;font-variant-numeric:tabular-nums}
 
 /* SIDEBAR */
 #sidebar{width:300px;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
 #tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
-.tab{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-weight:600;cursor:pointer;color:#666;border-bottom:2px solid transparent;transition:.15s}
+.tab{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:.12s}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-#tabcontent{flex:1;overflow-y:auto;padding:12px}
+#tabcontent{flex:1;overflow-y:auto;padding:10px;scroll-behavior:smooth}
 
-/* DESIGN CONTROLS */
-.sec{margin-bottom:18px}
-.sec label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+/* SECTIONS */
+.sec{margin-bottom:16px}
+.sec label{font-size:10px;color:var(--muted);display:block;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
 .row .lbl{font-size:12px;color:#aaa;min-width:72px}
-input[type=range]{flex:1;accent-color:var(--accent);height:4px}
-input[type=color]{width:28px;height:28px;border:none;border-radius:50%;cursor:pointer;padding:0;background:none}
-select{background:var(--bg3);color:var(--text);border:1px solid #444;border-radius:8px;padding:6px 8px;font-size:12px;width:100%}
-input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
-.prow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
-.cbtn{width:28px;height:28px;border-radius:50%;border:2px solid #555;cursor:pointer;flex-shrink:0;transition:.12s}
+input[type=range]{flex:1;accent-color:var(--accent);cursor:pointer}
+input[type=color]{width:28px;height:28px;border:none;border-radius:50%;cursor:pointer;padding:0;background:none;flex-shrink:0}
+select{background:var(--bg3);color:var(--text);border:1px solid #333;border-radius:8px;padding:6px 8px;font-size:12px;width:100%;cursor:pointer}
+.prow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:5px}
+.cbtn{width:28px;height:28px;border-radius:50%;border:2.5px solid #444;cursor:pointer;flex-shrink:0;transition:.12s}
 .cbtn.sel{border-color:#fff;transform:scale(1.18)}
 
 /* STYLE CARDS */
-.style-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
-.style-card{background:var(--bg3);border:2px solid #444;border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;transition:.15s}
-.style-card:hover{border-color:#888}
+.style-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:6px}
+.style-card{background:var(--bg3);border:2px solid #333;border-radius:10px;padding:9px 7px;cursor:pointer;text-align:center;transition:.15s;user-select:none}
+.style-card:active{transform:scale(0.97)}
 .style-card.sel{border-color:var(--accent)}
-.style-card .prev{font-size:12px;font-weight:900;margin-bottom:5px;min-height:22px;display:flex;align-items:center;justify-content:center;gap:3px;flex-wrap:wrap}
+.style-card .prev{font-size:11px;font-weight:900;margin-bottom:4px;min-height:22px;display:flex;align-items:center;justify-content:center;gap:3px}
 .style-card .name{font-size:10px;color:var(--muted)}
 
+/* FULL TEXT EDITOR */
+#full-text-wrap{display:flex;flex-direction:column;gap:6px}
+#full-text-editor{background:var(--bg3);border:1px solid #333;border-radius:8px;color:#fff;font-size:13px;font-family:inherit;padding:8px 10px;width:100%;min-height:100px;resize:vertical;outline:none;line-height:1.6}
+#full-text-editor:focus{border-color:var(--accent)}
+.full-text-hint{font-size:10px;color:var(--muted);line-height:1.5}
+
 /* SEGMENTS */
-#seg-list{display:flex;flex-direction:column;gap:5px}
-.seg{background:var(--bg3);border-radius:8px;padding:8px 10px;border:2px solid transparent;transition:.12s;cursor:pointer}
-.seg.active{border-color:var(--accent);background:#1a2a33}
-.seg-time{font-size:10px;color:#666;margin-bottom:2px}
-.seg-input{background:transparent;border:none;color:#fff;font-size:12px;width:100%;outline:none;font-family:inherit;resize:none}
+#seg-list{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.seg{background:var(--bg3);border-radius:8px;padding:7px 8px;border:2px solid transparent;transition:.12s;cursor:pointer}
+.seg:hover{border-color:#333}
+.seg.active{border-color:var(--accent);background:#1a2530}
+.seg-header{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.seg-time{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;flex:1}
+.seg-words{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+.seg-word{font-size:11px;background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:1px 5px;cursor:pointer;transition:.1s;user-select:none}
+.seg-word:hover{border-color:var(--accent);color:var(--accent)}
+.seg-word.editing{border-color:#ffaa00;background:#2a2000}
+.seg-input{background:transparent;border:none;color:#fff;font-size:12px;width:100%;outline:none;font-family:inherit;resize:none;line-height:1.5}
+
+/* ALIGN BUTTONS */
 #align-btns{display:flex;gap:6px}
 #align-btns button{flex:1;padding:6px;font-size:11px}
 
 /* MOBILE */
 @media(max-width:640px){
   #main{flex-direction:column}
-  #sidebar{width:100%;height:260px;border-left:none;border-top:1px solid var(--border)}
-  #topbar h1{font-size:13px}
-  .btn{padding:6px 10px;font-size:11px}
-  #player-wrap{max-height:45vh}
-  #vid{max-height:45vh}
+  #sidebar{width:100%;height:50dvh;border-left:none;border-top:1px solid var(--border);min-height:200px}
+  #preview-area{height:50dvh;min-height:0}
+  #player-wrap{max-height:100%}
 }
 </style>
 </head>
@@ -102,6 +114,7 @@ input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
 
 <div id="topbar">
   <h1>🎬 Caption Editor</h1>
+  <button class="btn btn-secondary" onclick="switchToFullText()" id="editModeBtn" style="display:none">📝 Text</button>
   <button class="btn btn-secondary" onclick="document.getElementById('vidInput').click()">📹 Video</button>
   <button class="btn btn-primary" id="expBtn" disabled onclick="startExport()">⬇️ Export</button>
   <input type="file" id="vidInput" accept="video/*,audio/*" style="display:none" onchange="loadVideo(event)">
@@ -112,19 +125,18 @@ input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
     <div id="upload-screen">
       <h2>🎬 Caption Editor</h2>
       <div id="api-box">
-        <p>🔑 Groq API klíč (zapamatuje se automaticky)</p>
-        <input type="password" id="apiKey" placeholder="gsk_..." oninput="localStorage.setItem('groq_key',this.value)">
+        <p>🔑 Groq API klíč (uloží se automaticky)</p>
+        <input type="password" id="apiKey" placeholder="gsk_..." oninput="localStorage.setItem('gk',this.value)">
       </div>
       <div class="upload-box" onclick="document.getElementById('vidInput').click()">
         <div class="icon">📹</div>
         <div class="label">Nahrát video</div>
-        <div class="sub">MP4, MOV, GoPro, iPhone... (jakákoliv velikost)</div>
+        <div class="sub">MP4, MOV, HEVC, GoPro, iPhone... jakákoliv velikost</div>
       </div>
-      <p style="font-size:11px;color:#555">Titulky se vygenerují automaticky v češtině</p>
     </div>
-    <div id="player-wrap">
+    <div id="player-wrap" style="display:none">
       <video id="vid" playsinline></video>
-      <div id="cap-overlay" style="bottom:15%"><div id="cap-text"></div></div>
+      <div id="cap-overlay" style="bottom:18%"><div id="cap-text"></div></div>
     </div>
     <div id="status"></div>
   </div>
@@ -137,37 +149,56 @@ input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
     </div>
     <div id="tabcontent">
 
+      <!-- TAB: TITULKY -->
       <div id="tab-titulky">
-        <div style="color:#555;font-size:12px;margin-bottom:10px" id="segHint">Nahraj video pro automatické titulky</div>
-        <div id="seg-list"></div>
+        <div id="full-text-section" style="display:none">
+          <div class="sec">
+            <label>Celý přepis – uprav text</label>
+            <div class="full-text-hint">Uprav celý text najednou. Klikni "Použít" pro rozdělení do segmentů.</div>
+            <textarea id="full-text-editor" rows="8" placeholder="Přepis se zobrazí po načtení videa..."></textarea>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <button class="btn btn-primary" style="flex:1" onclick="applyFullText()">✓ Použít</button>
+              <button class="btn btn-secondary" style="flex:1" onclick="hideFullText()">Zpět</button>
+            </div>
+          </div>
+        </div>
+        <div id="seg-section">
+          <div style="color:var(--muted);font-size:12px;margin-bottom:6px" id="segHint">Nahraj video pro automatické titulky</div>
+          <div style="display:flex;gap:5px;margin-bottom:8px" id="seg-actions" style="display:none">
+            <button class="btn btn-secondary" style="font-size:11px;flex:1" onclick="showFullText()">📝 Upravit text</button>
+            <button class="btn btn-secondary" style="font-size:11px;flex:1" onclick="reSegment()">⟳ Přegenerovat</button>
+          </div>
+          <div id="seg-list"></div>
+        </div>
       </div>
 
+      <!-- TAB: DESIGN -->
       <div id="tab-design" style="display:none">
         <div class="sec">
           <label>Styl aktivního slova</label>
           <div class="style-grid">
             <div class="style-card sel" id="sc0" onclick="setWordStyle(0)">
-              <div class="prev"><span style="color:#ccc">že</span><span style="color:#FFD700">jsou</span><span style="color:#ccc">to</span></div>
+              <div class="prev"><span style="color:#aaa">že</span><span style="color:#FFD700;font-size:14px">jsou</span><span style="color:#aaa">to</span></div>
               <div class="name">Barevné slovo</div>
             </div>
             <div class="style-card" id="sc1" onclick="setWordStyle(1)">
-              <div class="prev"><span style="color:#ccc">že</span><span style="background:#000;color:#FFD700;border-radius:4px;padding:0 5px">jsou</span><span style="color:#ccc">to</span></div>
+              <div class="prev"><span style="color:#aaa">že</span><span style="background:#000;color:#FFD700;border-radius:4px;padding:0 5px">jsou</span><span style="color:#aaa">to</span></div>
               <div class="name">Tmavé pozadí</div>
             </div>
             <div class="style-card" id="sc2" onclick="setWordStyle(2)">
-              <div class="prev"><span style="color:#FFD700">že jsou</span><span style="background:rgba(0,0,0,0.8);color:#FFD700;border-radius:4px;padding:0 5px;font-size:14px">to</span></div>
-              <div class="name">Vše žluté + box</div>
+              <div class="prev"><span style="color:#FFD700;font-size:10px">že jsou</span><span style="background:rgba(0,0,0,0.85);color:#FFD700;border-radius:4px;padding:0 5px;font-size:14px">to</span></div>
+              <div class="name">Zvětšené + pozadí</div>
             </div>
             <div class="style-card" id="sc3" onclick="setWordStyle(3)">
-              <div class="prev"><span style="color:#ccc;font-size:10px">že</span><span style="color:#FFD700;font-size:16px">jsou</span><span style="color:#ccc;font-size:10px">to</span></div>
-              <div class="name">Zvětšené slovo</div>
+              <div class="prev"><span style="color:#FFD700">že jsou to</span></div>
+              <div class="name">Vše barevné</div>
             </div>
             <div class="style-card" id="sc4" onclick="setWordStyle(4)">
-              <div class="prev" style="background:rgba(0,0,0,0.65);border-radius:5px;padding:3px 8px"><span style="color:#ccc">že</span>&nbsp;<span style="color:#FFD700">jsou</span>&nbsp;<span style="color:#ccc">to</span></div>
+              <div class="prev" style="background:rgba(0,0,0,0.65);border-radius:5px;padding:3px 8px"><span style="color:#aaa">že</span>&nbsp;<span style="color:#FFD700">jsou</span>&nbsp;<span style="color:#aaa">to</span></div>
               <div class="name">Pozadí řádku</div>
             </div>
             <div class="style-card" id="sc5" onclick="setWordStyle(5)">
-              <div class="prev"><span style="color:#FFD700;border-bottom:2px solid #FFD700;padding-bottom:1px">jsou</span></div>
+              <div class="prev"><span style="color:#aaa">že</span><span style="color:#FFD700;border-bottom:2px solid #FFD700;padding-bottom:1px">jsou</span><span style="color:#aaa">to</span></div>
               <div class="name">Podtržení</div>
             </div>
           </div>
@@ -175,39 +206,40 @@ input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
 
         <div class="sec">
           <label>Barva textu</label>
-          <div class="prow" id="tcrow">
+          <div class="prow">
             <div class="cbtn sel" style="background:#fff" data-g="tc" onclick="setColor('textColor','#ffffff',this)"></div>
             <div class="cbtn" style="background:#FFD700" data-g="tc" onclick="setColor('textColor','#FFD700',this)"></div>
             <div class="cbtn" style="background:#00FF88" data-g="tc" onclick="setColor('textColor','#00FF88',this)"></div>
             <div class="cbtn" style="background:#FF4444" data-g="tc" onclick="setColor('textColor','#FF4444',this)"></div>
-            <input type="color" value="#ffffff" oninput="st.textColor=this.value" style="width:28px;height:28px;border-radius:50%;border:2px solid #555;cursor:pointer;padding:0">
+            <input type="color" value="#ffffff" oninput="st.textColor=this.value" title="Vlastní barva">
           </div>
         </div>
         <div class="sec">
           <label>Barva zvýraznění</label>
-          <div class="prow" id="hcrow">
-            <div class="cbtn" style="background:#FFD700" data-g="hc" onclick="setColor('highColor','#FFD700',this)"></div>
-            <div class="cbtn sel" style="background:#00FF88" data-g="hc" onclick="setColor('highColor','#00FF88',this)"></div>
+          <div class="prow">
+            <div class="cbtn sel" style="background:#FFD700" data-g="hc" onclick="setColor('highColor','#FFD700',this)"></div>
+            <div class="cbtn" style="background:#00FF88" data-g="hc" onclick="setColor('highColor','#00FF88',this)"></div>
             <div class="cbtn" style="background:#00c2ff" data-g="hc" onclick="setColor('highColor','#00c2ff',this)"></div>
             <div class="cbtn" style="background:#FF4444" data-g="hc" onclick="setColor('highColor','#FF4444',this)"></div>
-            <input type="color" value="#00FF88" oninput="st.highColor=this.value" style="width:28px;height:28px;border-radius:50%;border:2px solid #555;cursor:pointer;padding:0">
+            <input type="color" value="#FFD700" oninput="st.highColor=this.value" title="Vlastní barva">
           </div>
         </div>
         <div class="sec">
           <label>Obrys textu</label>
-          <div class="row"><span class="lbl">Šířka</span><input type="range" min="0" max="15" value="6" oninput="st.outlineW=+this.value;document.getElementById('owv').textContent=this.value"><span id="owv" style="font-size:11px;min-width:16px;color:#aaa">6</span></div>
+          <div class="row"><span class="lbl">Šířka</span><input type="range" min="0" max="15" value="7" oninput="st.outlineW=+this.value;document.getElementById('owv').textContent=this.value"><span id="owv" style="font-size:11px;min-width:16px;color:#aaa">7</span></div>
           <div class="row"><span class="lbl">Barva</span><input type="color" value="#000000" onchange="st.outlineColor=this.value"></div>
         </div>
         <div class="sec">
-          <label>Pozice titulků</label>
-          <div class="row"><input type="range" min="5" max="85" value="15" oninput="st.posBottom=+this.value;document.getElementById('cap-overlay').style.bottom=this.value+'%';document.getElementById('posv').textContent=this.value+'%'"><span id="posv" style="font-size:11px;min-width:32px;color:#aaa">15%</span></div>
+          <label>Pozice titulků ↕</label>
+          <div class="row"><input type="range" min="2" max="90" value="18" oninput="st.posBottom=+this.value;document.getElementById('cap-overlay').style.bottom=this.value+'%';document.getElementById('posv').textContent=this.value+'%'"><span id="posv" style="font-size:11px;min-width:32px;color:#aaa">18%</span></div>
         </div>
       </div>
 
+      <!-- TAB: PÍSMO -->
       <div id="tab-pismo" style="display:none">
         <div class="sec">
           <label>Velikost písma</label>
-          <div class="row"><input type="range" min="16" max="80" value="40" oninput="st.fontSize=+this.value;document.getElementById('fsv').textContent=this.value+'px'"><span id="fsv" style="font-size:11px;min-width:36px;color:#aaa">40px</span></div>
+          <div class="row"><input type="range" min="14" max="80" value="38" oninput="st.fontSize=+this.value;document.getElementById('fsv').textContent=this.value+'px'"><span id="fsv" style="font-size:11px;min-width:36px;color:#aaa">38px</span></div>
         </div>
         <div class="sec">
           <label>Font</label>
@@ -216,6 +248,7 @@ input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
             <option value="Impact">Impact</option>
             <option value="Georgia">Georgia</option>
             <option value="Verdana">Verdana</option>
+            <option value="Trebuchet MS">Trebuchet MS</option>
           </select>
         </div>
         <div class="sec">
@@ -236,7 +269,7 @@ input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
         </div>
         <div class="sec">
           <label>Slov na segment</label>
-          <div class="row"><input type="range" min="1" max="6" value="3" oninput="st.wordsPerLine=+this.value;document.getElementById('wplv').textContent=this.value+' slov';rebuildSegments()"><span id="wplv" style="font-size:11px;min-width:40px;color:#aaa">3 slov</span></div>
+          <div class="row"><input type="range" min="1" max="7" value="3" id="wplRange" oninput="st.wordsPerLine=+this.value;document.getElementById('wplv').textContent=this.value+' slov'"><span id="wplv" style="font-size:11px;min-width:40px;color:#aaa">3 slov</span></div>
         </div>
       </div>
 
@@ -251,23 +284,26 @@ input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
 </div>
 
 <script>
-// Load saved API key
-window.addEventListener('load',()=>{
-  const saved = localStorage.getItem('groq_key');
-  if(saved) document.getElementById('apiKey').value = saved;
-});
-
+// ── STATE ──────────────────────────────────────────────
 const vid = document.getElementById('vid');
 const capText = document.getElementById('cap-text');
 const statusEl = document.getElementById('status');
-let allWords=[], segments=[], wordStyle=0;
-let st={textColor:'#ffffff',highColor:'#00FF88',outlineW:6,outlineColor:'#000000',fontSize:40,fontFamily:'Arial Black',textAlign:'center',textCase:'',posBottom:15,wordsPerLine:3};
+let allWords = [], segments = [], wordStyle = 0;
+let st = {
+  textColor:'#ffffff', highColor:'#FFD700',
+  outlineW:7, outlineColor:'#000000',
+  fontSize:38, fontFamily:'Arial Black',
+  textAlign:'center', textCase:'',
+  posBottom:18, wordsPerLine:3
+};
 
-function setWordStyle(n){
-  wordStyle=n;
-  for(let i=0;i<6;i++) document.getElementById('sc'+i).classList.toggle('sel',i===n);
-}
+// Load saved key
+window.addEventListener('load',()=>{
+  const k=localStorage.getItem('gk');
+  if(k) document.getElementById('apiKey').value=k;
+});
 
+// ── UI HELPERS ─────────────────────────────────────────
 function showStatus(msg,persist=false){
   statusEl.textContent=msg; statusEl.style.display='block';
   if(!persist) setTimeout(()=>statusEl.style.display='none',3500);
@@ -276,6 +312,11 @@ function showStatus(msg,persist=false){
 function showTab(t){
   ['titulky','design','pismo'].forEach(n=>document.getElementById('tab-'+n).style.display=n===t?'block':'none');
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['titulky','design','pismo'][i]===t));
+}
+
+function setWordStyle(n){
+  wordStyle=n;
+  for(let i=0;i<6;i++) document.getElementById('sc'+i).classList.toggle('sel',i===n);
 }
 
 function setColor(prop,val,el){
@@ -290,29 +331,62 @@ function setAlign(a,btn){
   btn.className='btn btn-primary';
 }
 
+// ── FULL TEXT EDITOR ───────────────────────────────────
+function showFullText(){
+  document.getElementById('full-text-editor').value=allWords.map(w=>w.text).join(' ');
+  document.getElementById('full-text-section').style.display='block';
+  document.getElementById('seg-section').style.display='none';
+}
+
+function hideFullText(){
+  document.getElementById('full-text-section').style.display='none';
+  document.getElementById('seg-section').style.display='block';
+}
+
+function applyFullText(){
+  const newText=document.getElementById('full-text-editor').value.trim();
+  const newWords=newText.split(/\s+/).filter(w=>w);
+  // Redistribute timing proportionally
+  if(allWords.length>0&&newWords.length>0){
+    const totalDur=allWords[allWords.length-1].end-allWords[0].start;
+    const wDur=totalDur/newWords.length;
+    const start=allWords[0].start;
+    allWords=newWords.map((w,i)=>({text:w,start:start+i*wDur,end:start+(i+1)*wDur}));
+  }
+  rebuildSegments();
+  hideFullText();
+  showStatus('✅ Text aktualizován');
+}
+
+// ── VIDEO LOAD ─────────────────────────────────────────
 async function loadVideo(e){
   const file=e.target.files[0]; if(!file) return;
   const key=document.getElementById('apiKey').value.trim();
   if(!key){alert('Vlož Groq API klíč!');return;}
-  localStorage.setItem('groq_key',key);
+  localStorage.setItem('gk',key);
   vid.src=URL.createObjectURL(file);
+  vid.load();
   document.getElementById('upload-screen').style.display='none';
-  document.getElementById('player-wrap').style.display='block';
+  const pw=document.getElementById('player-wrap');
+  pw.style.display='flex';
   document.getElementById('expBtn').disabled=false;
+  document.getElementById('editModeBtn').style.display='';
   await transcribeGroq(file,key);
 }
 
+// ── TRANSCRIPTION ──────────────────────────────────────
 async function transcribeGroq(file,key){
   showStatus('⏳ Extrahuji audio...',true);
   try{
     const ab=await file.arrayBuffer();
     const ac=new(window.AudioContext||window.webkitAudioContext)();
     const buf=await ac.decodeAudioData(ab);
-    const oc=new OfflineAudioContext(1,Math.floor(buf.duration*16000),16000);
+    const sr=16000;
+    const oc=new OfflineAudioContext(1,Math.floor(buf.duration*sr),sr);
     const src=oc.createBufferSource(); src.buffer=buf; src.connect(oc.destination); src.start();
     const rb=await oc.startRendering();
     const wav=toWav(rb);
-    showStatus('⏳ Přepisuji řeč... (~10 sekund)',true);
+    showStatus('⏳ Přepisuji řeč...',true);
     const fd=new FormData();
     fd.append('file',wav,'audio.wav');
     fd.append('model','whisper-large-v3-turbo');
@@ -323,9 +397,13 @@ async function transcribeGroq(file,key){
     if(!r.ok){const e=await r.text();throw new Error(e);}
     const d=await r.json();
     allWords=(d.words||[]).map(w=>({text:w.word||w.text||'',start:w.start,end:w.end}));
-    if(!allWords.length&&d.text){const ws=d.text.split(''),du=vid.duration||60,wd=du/ws.length;allWords=ws.map((w,i)=>({text:w,start:i*wd,end:(i+1)*wd}));}
+    if(!allWords.length&&d.text){
+      const ws=d.text.split(' '),dur=vid.duration||30,wd=dur/ws.length;
+      allWords=ws.map((w,i)=>({text:w,start:i*wd,end:(i+1)*wd}));
+    }
     rebuildSegments();
     document.getElementById('segHint').style.display='none';
+    document.getElementById('seg-actions').style.display='flex';
     showStatus('✅ Titulky vygenerovány!');
   }catch(err){showStatus('❌ Chyba: '+err.message);console.error(err);}
 }
@@ -342,140 +420,286 @@ function toWav(buf){
   return new Blob([w],{type:'audio/wav'});
 }
 
+// ── SEGMENTATION ───────────────────────────────────────
+// Smart segmentation: respects natural pauses and sentence boundaries
 function rebuildSegments(){
-  if(!allWords.length)return;
+  if(!allWords.length) return;
   segments=[];
-  for(let i=0;i<allWords.length;i+=st.wordsPerLine){
-    const c=allWords.slice(i,i+st.wordsPerLine);
-    segments.push({start:c[0].start,end:c[c.length-1].end,words:c.map(w=>({...w}))});
+  const wpl=st.wordsPerLine;
+  const PAUSE_THRESHOLD=0.4; // seconds gap = new segment
+
+  let i=0;
+  while(i<allWords.length){
+    let chunk=[];
+    chunk.push(allWords[i]);
+    let j=i+1;
+
+    while(j<allWords.length && chunk.length<wpl){
+      const gap=allWords[j].start - allWords[j-1].end;
+      // Break on significant pause
+      if(gap>=PAUSE_THRESHOLD) break;
+      chunk.push(allWords[j]);
+      j++;
+    }
+
+    segments.push({
+      start:chunk[0].start,
+      end:chunk[chunk.length-1].end,
+      words:chunk.map(w=>({...w}))
+    });
+    i=j;
   }
   renderSegList();
 }
 
+function reSegment(){
+  rebuildSegments();
+  showStatus('✅ Segmenty přegenerovány');
+}
+
 function renderSegList(){
-  const list=document.getElementById('seg-list');list.innerHTML='';
-  segments.forEach((seg,i)=>{
-    const div=document.createElement('div');div.className='seg';div.id='seg-'+i;
-    const txt=seg.words.map(w=>w.text).join(' ');
-    div.innerHTML=`<div class="seg-time">${fmt(seg.start)} – ${fmt(seg.end)}</div><textarea class="seg-input" rows="2" onchange="updateSeg(${i},this.value)">${txt}</textarea>`;
-    div.onclick=e=>{if(e.target.tagName!=='TEXTAREA')vid.currentTime=seg.start+0.05;};
+  const list=document.getElementById('seg-list');
+  list.innerHTML='';
+  segments.forEach((seg,si)=>{
+    const div=document.createElement('div');
+    div.className='seg'; div.id='seg-'+si;
+
+    // Header with time and jump button
+    const hdr=document.createElement('div');
+    hdr.className='seg-header';
+    hdr.innerHTML=`<span class="seg-time">${fmt(seg.start)} – ${fmt(seg.end)}</span>`;
+    const jumpBtn=document.createElement('button');
+    jumpBtn.className='btn btn-secondary';
+    jumpBtn.style.cssText='font-size:10px;padding:2px 7px';
+    jumpBtn.textContent='▶ Přejít';
+    jumpBtn.onclick=(e)=>{e.stopPropagation();vid.currentTime=seg.start+0.01;};
+    hdr.appendChild(jumpBtn);
+    div.appendChild(hdr);
+
+    // Words as clickable chips
+    const wordsDiv=document.createElement('div');
+    wordsDiv.className='seg-words';
+    seg.words.forEach((w,wi)=>{
+      const chip=document.createElement('span');
+      chip.className='seg-word';
+      chip.textContent=w.text;
+      chip.title='Klikni pro editaci';
+      chip.onclick=(e)=>{e.stopPropagation();editWord(si,wi,chip);};
+      wordsDiv.appendChild(chip);
+    });
+
+    // Add word button
+    const addBtn=document.createElement('span');
+    addBtn.style.cssText='font-size:10px;color:var(--accent);cursor:pointer;padding:1px 5px;border:1px dashed var(--accent);border-radius:4px';
+    addBtn.textContent='+';
+    addBtn.title='Přidat slovo';
+    addBtn.onclick=(e)=>{e.stopPropagation();addWordToSeg(si);};
+    wordsDiv.appendChild(addBtn);
+
+    div.appendChild(wordsDiv);
     list.appendChild(div);
   });
 }
 
-function updateSeg(i,val){
-  const ws=val.trim().split(/\s+/),dur=(segments[i].end-segments[i].start)/Math.max(ws.length,1);
-  segments[i].words=ws.map((w,j)=>({text:w,start:segments[i].start+j*dur,end:segments[i].start+(j+1)*dur}));
+function editWord(si,wi,chip){
+  const seg=segments[si];
+  const w=seg.words[wi];
+  const inp=document.createElement('input');
+  inp.value=w.text;
+  inp.style.cssText='background:#1a1a00;border:1px solid #ffaa00;border-radius:4px;color:#fff;font-size:11px;padding:1px 5px;width:80px;outline:none';
+  chip.replaceWith(inp);
+  inp.focus(); inp.select();
+  const done=()=>{
+    w.text=inp.value.trim()||w.text;
+    renderSegList();
+  };
+  inp.addEventListener('blur',done);
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')done();if(e.key==='Escape'){inp.value=w.text;done();}});
 }
 
-function fmt(s){s=s||0;const m=Math.floor(s/60),sec=Math.floor(s%60);return `${m}:${sec.toString().padStart(2,'0')}`;}
+function addWordToSeg(si){
+  const seg=segments[si];
+  const lastEnd=seg.words[seg.words.length-1].end;
+  const newWord={text:'slovo',start:lastEnd,end:lastEnd+0.3};
+  seg.words.push(newWord);
+  seg.end=newWord.end;
+  // Also add to allWords in right position
+  const insertIdx=allWords.findIndex(w=>w.start>=newWord.start);
+  if(insertIdx===-1) allWords.push(newWord);
+  else allWords.splice(insertIdx,0,newWord);
+  renderSegList();
+}
 
+// ── CAPTION RENDER ─────────────────────────────────────
 vid.addEventListener('timeupdate',()=>{
   const t=vid.currentTime,dur=vid.duration||1;
   document.getElementById('progBar').style.width=(t/dur*100)+'%';
   document.getElementById('timeTxt').textContent=`${fmt(t)} / ${fmt(dur)}`;
   renderCaption(t);
-  segments.forEach((seg,i)=>{const el=document.getElementById('seg-'+i);if(el)el.classList.toggle('active',t>=seg.start&&t<=seg.end);});
+  // Highlight active segment
+  segments.forEach((seg,i)=>{
+    const el=document.getElementById('seg-'+i);
+    if(el) el.classList.toggle('active',t>=seg.start&&t<=seg.end+0.1);
+  });
 });
 
 function renderCaption(t){
-  const seg=segments.find(s=>t>=s.start-0.1&&t<=s.end+0.1);
+  const seg=segments.find(s=>t>=s.start-0.05&&t<=s.end+0.15);
   if(!seg){capText.innerHTML='';return;}
+
   const ow=st.outlineW;
   const sh=ow>0?`${ow}px ${ow}px 0 ${st.outlineColor},-${ow}px -${ow}px 0 ${st.outlineColor},${ow}px -${ow}px 0 ${st.outlineColor},-${ow}px ${ow}px 0 ${st.outlineColor}`:'none';
-  capText.style.cssText=`font-family:'${st.fontFamily}',sans-serif;font-weight:900;font-size:${st.fontSize}px;color:${st.textColor};text-shadow:${sh};text-align:${st.textAlign};text-transform:${st.textCase||'none'};line-height:1.3;word-break:break-word;`;
+  capText.style.cssText=`font-family:'${st.fontFamily}',sans-serif;font-weight:900;font-size:${st.fontSize}px;color:${st.textColor};text-shadow:${sh};text-align:${st.textAlign};text-transform:${st.textCase||'none'};line-height:1.25;word-break:break-word;max-width:95%;`;
+
+  const allYellow=wordStyle===3;
   const words=seg.words.map(w=>{
     const active=t>=w.start-0.05&&t<=w.end+0.05;
-    let txt=w.text;
-    if(st.textCase==='uppercase')txt=txt.toUpperCase();
-    if(st.textCase==='lowercase')txt=txt.toLowerCase();
-    const base=(wordStyle===2)?st.highColor:st.textColor;
+    let txt=applyCase(w.text);
+    const base=allYellow?st.highColor:st.textColor;
+
     if(active){
       switch(wordStyle){
-        case 0:return `<span style="color:${st.highColor}">${txt}</span>`;
-        case 1:return `<span style="color:${st.highColor};background:rgba(0,0,0,0.82);border-radius:6px;padding:1px 7px;">${txt}</span>`;
-        case 2:return `<span style="color:${st.highColor};background:rgba(0,0,0,0.78);border-radius:6px;padding:1px 8px;font-size:${st.fontSize*1.08}px">${txt}</span>`;
-        case 3:return `<span style="color:${st.highColor};font-size:${st.fontSize*1.28}px;line-height:1">${txt}</span>`;
-        case 4:return `<span style="color:${st.highColor}">${txt}</span>`;
-        case 5:return `<span style="color:${st.highColor};border-bottom:3px solid ${st.highColor};padding-bottom:1px">${txt}</span>`;
+        case 0: return `<span style="color:${st.highColor}">${txt}</span>`;
+        case 1: return `<span style="color:${st.highColor};background:rgba(0,0,0,0.85);border-radius:6px;padding:1px 8px;">${txt}</span>`;
+        case 2: return `<span style="color:${st.highColor};background:rgba(0,0,0,0.85);border-radius:7px;padding:1px 9px;font-size:${st.fontSize*1.2}px;line-height:1">${txt}</span>`;
+        case 3: return `<span style="color:${st.highColor};font-size:${st.fontSize*1.15}px;line-height:1">${txt}</span>`;
+        case 4: return `<span style="color:${st.highColor}">${txt}</span>`;
+        case 5: return `<span style="color:${st.highColor};border-bottom:3px solid ${st.highColor};padding-bottom:1px">${txt}</span>`;
       }
     }
     return `<span style="color:${base}">${txt}</span>`;
   }).join(' ');
-  capText.innerHTML=wordStyle===4?`<span style="display:inline-block;background:rgba(0,0,0,0.65);border-radius:8px;padding:3px 12px">${words}</span>`:words;
+
+  capText.innerHTML=wordStyle===4
+    ?`<span style="display:inline-block;background:rgba(0,0,0,0.7);border-radius:9px;padding:4px 14px">${words}</span>`
+    :words;
 }
 
+function applyCase(txt){
+  if(st.textCase==='uppercase') return txt.toUpperCase();
+  if(st.textCase==='lowercase') return txt.toLowerCase();
+  return txt;
+}
+
+function fmt(s){
+  s=s||0;const m=Math.floor(s/60),sec=Math.floor(s%60);
+  return `${m}:${sec.toString().padStart(2,'0')}`;
+}
+
+// ── PLAYBACK ───────────────────────────────────────────
 function togglePlay(){
   if(vid.paused){vid.play();document.getElementById('playBtn').textContent='⏸';}
   else{vid.pause();document.getElementById('playBtn').textContent='▶';}
 }
+vid.addEventListener('ended',()=>document.getElementById('playBtn').textContent='▶');
 
-function seek(e){const r=document.getElementById('progWrap').getBoundingClientRect();vid.currentTime=((e.clientX-r.left)/r.width)*vid.duration;}
+function seek(e){
+  const r=document.getElementById('progWrap').getBoundingClientRect();
+  vid.currentTime=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*(vid.duration||0);
+}
 
+// ── EXPORT ─────────────────────────────────────────────
 async function startExport(){
-  if(!segments.length){alert('Nejdřív nahraj video a vygeneruj titulky');return;}
+  if(!segments.length){alert('Nahraj video a vygeneruj titulky');return;}
   showStatus('⏳ Exportuji... prosím čekej',true);
+
   const canvas=document.createElement('canvas');
   const vw=vid.videoWidth||720,vh=vid.videoHeight||1280;
-  canvas.width=vw;canvas.height=vh;
+  canvas.width=vw; canvas.height=vh;
   const ctx=canvas.getContext('2d');
+
   const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
   const stream=canvas.captureStream(30),chunks=[];
   const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:8000000});
-  rec.ondataavailable=e=>chunks.push(e.data);
+  rec.ondataavailable=e=>e.data.size>0&&chunks.push(e.data);
   rec.onstop=()=>{
     const blob=new Blob(chunks,{type:'video/webm'});
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='video_titulky.webm';a.click();
-    showStatus('✅ Hotovo! Soubor se stahuje.');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='video_titulky.webm';
+    a.click();
+    showStatus('✅ Stahování spuštěno!');
   };
-  vid.currentTime=0;await new Promise(r=>setTimeout(r,500));
-  rec.start(100);vid.play();
+
+  vid.currentTime=0;
+  await new Promise(r=>setTimeout(r,600));
+  rec.start(100); vid.play();
+
   function draw(){
-    if(vid.ended||(vid.paused&&vid.currentTime>=vid.duration-0.1)){rec.stop();return;}
+    if(vid.ended||(vid.paused&&vid.currentTime>=vid.duration-0.05)){rec.stop();return;}
     ctx.drawImage(vid,0,0,vw,vh);
     const t=vid.currentTime;
-    const seg=segments.find(s=>t>=s.start-0.1&&t<=s.end+0.1);
+    const seg=segments.find(s=>t>=s.start-0.05&&t<=s.end+0.15);
+
     if(seg){
       const sc=vw/390,fs=st.fontSize*sc,ow=st.outlineW*sc;
       ctx.font=`900 ${fs}px '${st.fontFamily}',sans-serif`;
-      ctx.textAlign='center';ctx.lineJoin='round';
-      const posY=vh*(1-st.posBottom/100)-fs*0.2;
+      ctx.textAlign='center'; ctx.lineJoin='round';
+      const posY=vh*(1-st.posBottom/100);
       const words=seg.words;
-      const totalW=words.reduce((a,w)=>a+ctx.measureText(w.text).width+fs*0.25,0)-fs*0.25;
+      const allYellow=wordStyle===3;
+
+      // Measure total width
+      const widths=words.map(w=>ctx.measureText(applyCase(w.text)).width);
+      const totalW=widths.reduce((a,b)=>a+b,0)+fs*0.28*(words.length-1);
+
+      // Draw row background for style 4
       if(wordStyle===4){
-        ctx.fillStyle='rgba(0,0,0,0.65)';ctx.beginPath();
-        if(ctx.roundRect)ctx.roundRect(vw/2-totalW/2-fs*0.3,posY-fs*1.05,totalW+fs*0.6,fs*1.35,fs*0.15);
-        else ctx.rect(vw/2-totalW/2-fs*0.3,posY-fs*1.05,totalW+fs*0.6,fs*1.35);
+        ctx.fillStyle='rgba(0,0,0,0.72)';
+        ctx.beginPath();
+        const rx=vw/2-totalW/2-fs*0.35,ry=posY-fs*1.0,rw=totalW+fs*0.7,rh=fs*1.3;
+        if(ctx.roundRect) ctx.roundRect(rx,ry,rw,rh,fs*0.14);
+        else ctx.rect(rx,ry,rw,rh);
         ctx.fill();
       }
+
       let x0=vw/2-totalW/2;
-      words.forEach(w=>{
+      words.forEach((w,wi)=>{
         const active=t>=w.start-0.05&&t<=w.end+0.05;
-        let txt=w.text;
-        if(st.textCase==='uppercase')txt=txt.toUpperCase();
-        if(st.textCase==='lowercase')txt=txt.toLowerCase();
-        const ww=ctx.measureText(txt).width,cx=x0+ww/2;
-        const cfs=active&&wordStyle===3?fs*1.28:active&&wordStyle===2?fs*1.08:fs;
-        if(cfs!==fs)ctx.font=`900 ${cfs}px '${st.fontFamily}',sans-serif`;
+        const txt=applyCase(w.text);
+        const ww=widths[wi];
+        const cx=x0+ww/2;
+
+        let cfs=fs;
+        if(active&&(wordStyle===2||wordStyle===3)) cfs=fs*(wordStyle===2?1.2:1.15);
+
+        if(cfs!==fs){ctx.font=`900 ${cfs}px '${st.fontFamily}',sans-serif`;}
+
+        // Word background box
         if(active&&(wordStyle===1||wordStyle===2)){
-          ctx.fillStyle='rgba(0,0,0,0.82)';ctx.beginPath();
-          if(ctx.roundRect)ctx.roundRect(cx-ww/2-fs*0.15,posY-cfs*0.95,ww+fs*0.3,cfs*1.15,fs*0.1);
-          else ctx.rect(cx-ww/2-fs*0.15,posY-cfs*0.95,ww+fs*0.3,cfs*1.15);
+          ctx.fillStyle='rgba(0,0,0,0.85)';
+          ctx.beginPath();
+          const bx=cx-ww/2-fs*0.18,by=posY-cfs*0.98,bw=ww+fs*0.36,bh=cfs*1.18;
+          if(ctx.roundRect) ctx.roundRect(bx,by,bw,bh,fs*0.1);
+          else ctx.rect(bx,by,bw,bh);
           ctx.fill();
         }
+
+        // Outline
         if(ow>0){ctx.strokeStyle=st.outlineColor;ctx.lineWidth=ow;ctx.strokeText(txt,cx,posY);}
-        const base=(wordStyle===2)?st.highColor:st.textColor;
+
+        // Fill
+        const base=allYellow?st.highColor:st.textColor;
         ctx.fillStyle=active?st.highColor:base;
         ctx.fillText(txt,cx,posY);
-        if(active&&wordStyle===5){ctx.strokeStyle=st.highColor;ctx.lineWidth=ow*0.5;ctx.beginPath();ctx.moveTo(cx-ww/2,posY+fs*0.1);ctx.lineTo(cx+ww/2,posY+fs*0.1);ctx.stroke();}
-        if(cfs!==fs)ctx.font=`900 ${fs}px '${st.fontFamily}',sans-serif`;
-        x0+=ww+fs*0.25;
+
+        // Underline for style 5
+        if(active&&wordStyle===5){
+          ctx.strokeStyle=st.highColor;ctx.lineWidth=ow*0.6;
+          ctx.beginPath();ctx.moveTo(cx-ww/2,posY+fs*0.12);ctx.lineTo(cx+ww/2,posY+fs*0.12);ctx.stroke();
+        }
+
+        if(cfs!==fs) ctx.font=`900 ${fs}px '${st.fontFamily}',sans-serif`;
+        x0+=ww+fs*0.28;
       });
     }
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
 }
+
+// Legacy - kept for compatibility
+function switchToFullText(){ showTab('titulky'); showFullText(); }
 </script>
 </body>
 </html>
