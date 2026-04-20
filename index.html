@@ -75,13 +75,13 @@ input[type=checkbox]{accent-color:#00c2ff;width:16px;height:16px}
     <div id="upload-screen">
       <h2>🎬 Caption Editor</h2>
       <div id="api-setup">
-        <p>🔑 Groq API klíč<br><span style="color:#666;font-size:11px">Najdeš ho na console.groq.com/keys</span></p>
+        <p>🔑 Groq API klíč<br><span style="color:#666;font-size:11px">Najdeš ho v Notionu nebo na console.groq.com/keys</span></p>
         <input type="password" id="apiKey" placeholder="gsk_...">
       </div>
       <div class="upload-box" onclick="document.getElementById('vidInput').click()">
         <div class="icon">📹</div>
         <div class="label">Nahrát video</div>
-        <div class="sub">MP4, MOV, HEVC, GoPro, iPhone...</div>
+        <div class="sub">MP4, MOV, HEVC, GoPro, iPhone... (jakákoliv velikost)</div>
       </div>
       <p style="font-size:11px;color:#555">Titulky se vygenerují automaticky v češtině</p>
     </div>
@@ -248,10 +248,26 @@ async function loadVideo(e){
 }
 
 async function transcribeGroq(file, key){
-  showStatus('⏳ Přepisuji řeč... (~10 sekund)', true);
+  showStatus('⏳ Extrahuji audio z videa...', true);
   try {
+    // Extract audio using Web Audio API - reduces 300MB video to ~3MB audio
+    const arrayBuffer = await file.arrayBuffer();
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+    // Render to mono WAV at 16kHz
+    const offlineCtx = new OfflineAudioContext(1, Math.floor(audioBuffer.duration * 16000), 16000);
+    const source = offlineCtx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(offlineCtx.destination);
+    source.start();
+    const rendered = await offlineCtx.startRendering();
+    const wavBlob = audioBufferToWav(rendered);
+
+    showStatus('⏳ Přepisuji řeč na text... (~10 sekund)', true);
+
     const formData = new FormData();
-    formData.append('file', file, file.name || 'audio.mp4');
+    formData.append('file', wavBlob, 'audio.wav');
     formData.append('model', 'whisper-large-v3-turbo');
     formData.append('language', 'cs');
     formData.append('response_format', 'verbose_json');
@@ -286,6 +302,25 @@ async function transcribeGroq(file, key){
     showStatus('❌ Chyba: '+err.message);
     console.error(err);
   }
+}
+
+function audioBufferToWav(buffer){
+  const sr=buffer.sampleRate, samples=buffer.getChannelData(0);
+  const dataLen=samples.length*2;
+  const wav=new ArrayBuffer(44+dataLen);
+  const v=new DataView(wav);
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+  ws(0,'RIFF');v.setUint32(4,36+dataLen,true);ws(8,'WAVE');
+  ws(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);
+  v.setUint16(22,1,true);v.setUint32(24,sr,true);
+  v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);
+  ws(36,'data');v.setUint32(40,dataLen,true);
+  let o=44;
+  for(let i=0;i<samples.length;i++){
+    const s=Math.max(-1,Math.min(1,samples[i]));
+    v.setInt16(o,s<0?s*0x8000:s*0x7FFF,true);o+=2;
+  }
+  return new Blob([wav],{type:'audio/wav'});
 }
 
 function rebuildSegments(){
