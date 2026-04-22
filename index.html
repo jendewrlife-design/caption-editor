@@ -70,23 +70,26 @@ select{background:var(--bg3);color:var(--text);border:1px solid #333;border-radi
 #full-text-editor{background:var(--bg3);border:1px solid #333;border-radius:8px;color:#fff;font-size:13px;font-family:inherit;padding:8px 10px;width:100%;min-height:120px;resize:vertical;outline:none;line-height:1.6}
 #full-text-editor:focus{border-color:var(--accent)}
 
-#seg-list{display:flex;flex-direction:column;gap:3px;margin-top:6px}
+/* SEGMENTS */
+#seg-list{display:flex;flex-direction:column;gap:4px;margin-top:6px}
 .seg{background:var(--bg3);border-radius:8px;padding:6px 8px;border:2px solid transparent;transition:.1s}
 .seg.active{border-color:var(--accent);background:#192530}
-.seg-header{display:flex;align-items:center;gap:4px;margin-bottom:4px}
+.seg-header{display:flex;align-items:center;gap:4px;margin-bottom:5px}
 .seg-time{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;flex:1}
-.seg-words{display:flex;flex-wrap:wrap;gap:3px;align-items:center}
-.word-wrap{display:inline-flex;flex-direction:column;align-items:center;gap:1px}
-.word-chip{display:inline-flex;align-items:center;gap:2px;background:#1a1a1a;border:1px solid #333;border-radius:5px;padding:2px 4px;font-size:11px}
-.word-chip input{background:transparent;border:none;color:#fff;font-size:11px;outline:none;font-family:inherit;min-width:20px;max-width:80px}
-.word-actions{display:flex;gap:1px}
-.wa{background:none;border:none;cursor:pointer;font-size:9px;padding:1px 3px;border-radius:3px;line-height:1;transition:.1s}
-.wa:hover{background:#333}
-.wa.left{color:var(--accent)}
-.wa.right{color:var(--accent)}
-.wa.del{color:#ff6666}
-.add-word-btn{font-size:10px;color:var(--accent);cursor:pointer;padding:2px 6px;border:1px dashed #444;border-radius:4px;background:none;transition:.1s}
-.add-word-btn:hover{border-color:var(--accent);background:#1a1a2a}
+
+/* DRAG & DROP WORDS */
+.seg-words{display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-height:28px;padding:3px;border-radius:6px;transition:.1s}
+.seg-words.drag-over{background:rgba(0,194,255,0.08);border:1px dashed var(--accent)}
+.word-chip{display:inline-flex;align-items:center;gap:3px;background:#1e1e1e;border:1px solid #383838;border-radius:6px;padding:3px 6px;font-size:11px;cursor:grab;user-select:none;transition:.1s;touch-action:none}
+.word-chip:hover{border-color:#555;background:#252525}
+.word-chip.dragging{opacity:0.4;cursor:grabbing}
+.word-chip.drag-target{border-color:var(--accent);background:#1a2530}
+.word-chip input{background:transparent;border:none;color:#fff;font-size:11px;outline:none;font-family:inherit;min-width:20px;max-width:80px;cursor:text}
+.word-chip .del-btn{background:none;border:none;color:#ff5555;cursor:pointer;font-size:10px;padding:0 1px;line-height:1;opacity:0.7}
+.word-chip .del-btn:hover{opacity:1}
+.drag-handle{color:#555;font-size:10px;cursor:grab;line-height:1}
+.add-word-btn{font-size:10px;color:var(--accent);cursor:pointer;padding:2px 7px;border:1px dashed #444;border-radius:5px;background:none;transition:.1s}
+.add-word-btn:hover{border-color:var(--accent)}
 
 #align-btns{display:flex;gap:6px}
 #align-btns button{flex:1;padding:6px;font-size:11px}
@@ -211,19 +214,29 @@ select{background:var(--bg3);color:var(--text);border:1px solid #333;border-radi
         </div>
         <div class="sec">
           <label>Obrys textu</label>
-          <div class="row"><span class="lbl">Šířka</span><input type="range" min="0" max="15" value="8" oninput="st.outlineW=+this.value;document.getElementById('owv').textContent=this.value"><span id="owv" style="font-size:11px;min-width:16px;color:#aaa">8</span></div>
+          <div class="row">
+            <span class="lbl">Tloušťka</span>
+            <input type="range" min="0" max="20" value="6" oninput="st.outlineW=+this.value;document.getElementById('owv').textContent=this.value">
+            <span id="owv" style="font-size:11px;min-width:16px;color:#aaa">6</span>
+          </div>
           <div class="row"><span class="lbl">Barva</span><input type="color" value="#000000" onchange="st.outlineColor=this.value"></div>
         </div>
         <div class="sec">
           <label>Pozice titulků ↕</label>
-          <div class="row"><input type="range" min="2" max="90" value="18" oninput="st.posBottom=+this.value;document.getElementById('cap-overlay').style.bottom=this.value+'%';document.getElementById('posv').textContent=this.value+'%'"><span id="posv" style="font-size:11px;min-width:32px;color:#aaa">18%</span></div>
+          <div class="row">
+            <input type="range" min="2" max="90" value="18" oninput="st.posBottom=+this.value;document.getElementById('cap-overlay').style.bottom=this.value+'%';document.getElementById('posv').textContent=this.value+'%'">
+            <span id="posv" style="font-size:11px;min-width:32px;color:#aaa">18%</span>
+          </div>
         </div>
       </div>
 
       <div id="tab-pismo" style="display:none">
         <div class="sec">
           <label>Velikost písma</label>
-          <div class="row"><input type="range" min="14" max="80" value="38" oninput="st.fontSize=+this.value;document.getElementById('fsv').textContent=this.value+'px'"><span id="fsv" style="font-size:11px;min-width:36px;color:#aaa">38px</span></div>
+          <div class="row">
+            <input type="range" min="14" max="80" value="38" oninput="st.fontSize=+this.value;document.getElementById('fsv').textContent=this.value+'px'">
+            <span id="fsv" style="font-size:11px;min-width:36px;color:#aaa">38px</span>
+          </div>
         </div>
         <div class="sec">
           <label>Font</label>
@@ -252,7 +265,10 @@ select{background:var(--bg3);color:var(--text);border:1px solid #333;border-radi
         </div>
         <div class="sec">
           <label>Slov na segment</label>
-          <div class="row"><input type="range" min="1" max="7" value="3" oninput="st.wordsPerLine=+this.value;document.getElementById('wplv').textContent=this.value+' slov'"><span id="wplv" style="font-size:11px;min-width:40px;color:#aaa">3 slov</span></div>
+          <div class="row">
+            <input type="range" min="1" max="7" value="3" oninput="st.wordsPerLine=+this.value;document.getElementById('wplv').textContent=this.value+' slov'">
+            <span id="wplv" style="font-size:11px;min-width:40px;color:#aaa">3 slov</span>
+          </div>
         </div>
       </div>
 
@@ -271,7 +287,10 @@ const vid=document.getElementById('vid');
 const capText=document.getElementById('cap-text');
 const statusEl=document.getElementById('status');
 let allWords=[],segments=[],wordStyle=1;
-let st={textColor:'#FFD700',highColor:'#FFD700',outlineW:8,outlineColor:'#000000',fontSize:38,fontFamily:'Arial Black',textAlign:'center',textCase:'',posBottom:18,wordsPerLine:3};
+let st={textColor:'#FFD700',highColor:'#FFD700',outlineW:6,outlineColor:'#000000',fontSize:38,fontFamily:'Arial Black',textAlign:'center',textCase:'',posBottom:18,wordsPerLine:3};
+
+// drag state
+let dragSrc={si:-1,wi:-1};
 
 window.addEventListener('load',()=>{
   const k=localStorage.getItem('gk');
@@ -325,18 +344,15 @@ function applyFullText(){
     const start=allWords[0].start;
     allWords=newWords.map((w,i)=>({text:w,start:start+i*wDur,end:start+(i+1)*wDur}));
   }
-  rebuildSegments();
-  hideFullText();
-  showStatus('✅ Text aktualizován');
+  rebuildSegments();hideFullText();showStatus('✅ Text aktualizován');
 }
 
 async function loadVideo(e){
-  const file=e.target.files[0]; if(!file) return;
+  const file=e.target.files[0];if(!file)return;
   const key=document.getElementById('apiKey').value.trim();
   if(!key){alert('Vlož Groq API klíč!');return;}
   localStorage.setItem('gk',key);
-  vid.src=URL.createObjectURL(file);
-  vid.load();
+  vid.src=URL.createObjectURL(file);vid.load();
   document.getElementById('upload-screen').style.display='none';
   document.getElementById('player-wrap').style.display='flex';
   document.getElementById('expBtn').disabled=false;
@@ -392,12 +408,10 @@ function toWav(buf){
 function rebuildSegments(){
   if(!allWords.length)return;
   segments=[];
-  const wpl=st.wordsPerLine;
-  const PAUSE=0.35;
+  const wpl=st.wordsPerLine,PAUSE=0.35;
   let i=0;
   while(i<allWords.length){
-    let chunk=[allWords[i]];
-    let j=i+1;
+    let chunk=[allWords[i]],j=i+1;
     while(j<allWords.length&&chunk.length<wpl){
       if(allWords[j].start-allWords[j-1].end>=PAUSE)break;
       chunk.push(allWords[j]);j++;
@@ -408,53 +422,7 @@ function rebuildSegments(){
   renderSegList();
 }
 
-// Flatten all words from segments back into allWords
-function syncAllWords(){
-  allWords=segments.flatMap(s=>s.words);
-}
-
-// Move word left (to previous segment at end) or right (to next segment at start)
-function moveWord(si,wi,dir){
-  const seg=segments[si];
-  if(dir===-1&&si>0){
-    const w=seg.words.splice(wi,1)[0];
-    segments[si-1].words.push(w);
-    updateSegBounds(si-1);
-    updateSegBounds(si);
-    if(seg.words.length===0) segments.splice(si,1);
-  } else if(dir===1&&si<segments.length-1){
-    const w=seg.words.splice(wi,1)[0];
-    segments[si+1].words.unshift(w);
-    updateSegBounds(si+1);
-    updateSegBounds(si);
-    if(seg.words.length===0) segments.splice(si,1);
-  }
-  syncAllWords();
-  renderSegList();
-}
-
-function deleteWord(si,wi){
-  segments[si].words.splice(wi,1);
-  if(segments[si].words.length===0){
-    segments.splice(si,1);
-  } else {
-    updateSegBounds(si);
-  }
-  syncAllWords();
-  renderSegList();
-}
-
-function addWord(si){
-  const seg=segments[si];
-  const lastEnd=seg.words.length?seg.words[seg.words.length-1].end:seg.end;
-  const nextStart=si<segments.length-1?segments[si+1].start:lastEnd+1;
-  const mid=(lastEnd+nextStart)/2;
-  const newW={text:'slovo',start:mid,end:mid+0.2};
-  seg.words.push(newW);
-  updateSegBounds(si);
-  syncAllWords();
-  renderSegList();
-}
+function syncAllWords(){allWords=segments.flatMap(s=>s.words);}
 
 function updateSegBounds(si){
   if(si<0||si>=segments.length)return;
@@ -464,6 +432,100 @@ function updateSegBounds(si){
   seg.end=seg.words[seg.words.length-1].end;
 }
 
+function deleteWord(si,wi){
+  segments[si].words.splice(wi,1);
+  if(!segments[si].words.length) segments.splice(si,1);
+  else updateSegBounds(si);
+  syncAllWords();renderSegList();
+}
+
+function addWord(si){
+  const seg=segments[si];
+  const lastEnd=seg.words.length?seg.words[seg.words.length-1].end:seg.end;
+  const nextStart=si<segments.length-1?segments[si+1].start:lastEnd+0.5;
+  const mid=(lastEnd+nextStart)/2;
+  seg.words.push({text:'slovo',start:mid,end:mid+0.2});
+  updateSegBounds(si);syncAllWords();renderSegList();
+}
+
+// ── DRAG & DROP ──
+function onDragStart(e,si,wi){
+  dragSrc={si,wi};
+  e.dataTransfer.effectAllowed='move';
+  setTimeout(()=>e.target.classList.add('dragging'),0);
+}
+
+function onDragEnd(e){
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.seg-words').forEach(el=>el.classList.remove('drag-over'));
+  document.querySelectorAll('.word-chip').forEach(el=>el.classList.remove('drag-target'));
+}
+
+function onDragOver(e,si,wi){
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+  document.querySelectorAll('.word-chip').forEach(el=>el.classList.remove('drag-target'));
+  const chip=document.getElementById(`chip-${si}-${wi}`);
+  if(chip) chip.classList.add('drag-target');
+}
+
+function onDragOverSeg(e,si){
+  e.preventDefault();
+  document.querySelectorAll('.seg-words').forEach(el=>el.classList.remove('drag-over'));
+  const segWords=document.getElementById(`words-${si}`);
+  if(segWords) segWords.classList.add('drag-over');
+}
+
+function onDrop(e,targetSi,targetWi){
+  e.preventDefault();
+  document.querySelectorAll('.seg-words').forEach(el=>el.classList.remove('drag-over'));
+  document.querySelectorAll('.word-chip').forEach(el=>el.classList.remove('drag-target'));
+
+  const {si:srcSi,wi:srcWi}=dragSrc;
+  if(srcSi===targetSi&&srcWi===targetWi)return;
+
+  // Get the word being moved
+  const word=segments[srcSi].words[srcWi];
+
+  // Remove from source
+  segments[srcSi].words.splice(srcWi,1);
+  if(!segments[srcSi].words.length) segments.splice(srcSi,1);
+  else updateSegBounds(srcSi);
+
+  // Adjust target index if same segment and source was before target
+  let tSi=targetSi,tWi=targetWi;
+  if(srcSi===tSi&&srcWi<tWi) tWi--;
+  if(srcSi<tSi&&!segments[srcSi]?.words?.length) tSi--;
+
+  // Insert at target
+  if(tSi>=0&&tSi<segments.length){
+    segments[tSi].words.splice(tWi,0,word);
+    updateSegBounds(tSi);
+  }
+
+  syncAllWords();renderSegList();
+}
+
+function onDropSeg(e,targetSi){
+  e.preventDefault();
+  document.querySelectorAll('.seg-words').forEach(el=>el.classList.remove('drag-over'));
+  const {si:srcSi,wi:srcWi}=dragSrc;
+
+  const word=segments[srcSi].words[srcWi];
+  segments[srcSi].words.splice(srcWi,1);
+  if(!segments[srcSi].words.length) segments.splice(srcSi,1);
+  else updateSegBounds(srcSi);
+
+  let tSi=targetSi;
+  if(srcSi<tSi&&segments[srcSi-1]?.words?.length===0) tSi--;
+
+  if(tSi>=0&&tSi<segments.length){
+    segments[tSi].words.push(word);
+    updateSegBounds(tSi);
+  }
+  syncAllWords();renderSegList();
+}
+
 function renderSegList(){
   const list=document.getElementById('seg-list');
   list.innerHTML='';
@@ -471,7 +533,6 @@ function renderSegList(){
     const div=document.createElement('div');
     div.className='seg';div.id='seg-'+si;
 
-    // Header
     const hdr=document.createElement('div');
     hdr.className='seg-header';
     const timeEl=document.createElement('span');
@@ -481,23 +542,30 @@ function renderSegList(){
     jumpBtn.className='btn btn-secondary';
     jumpBtn.style.cssText='font-size:10px;padding:2px 7px';
     jumpBtn.textContent='▶';
-    jumpBtn.title='Přejít na toto místo ve videu';
     jumpBtn.onclick=()=>vid.currentTime=seg.start+0.01;
-    hdr.appendChild(timeEl);
-    hdr.appendChild(jumpBtn);
+    hdr.appendChild(timeEl);hdr.appendChild(jumpBtn);
     div.appendChild(hdr);
 
-    // Words
     const wordsDiv=document.createElement('div');
     wordsDiv.className='seg-words';
+    wordsDiv.id=`words-${si}`;
+    wordsDiv.addEventListener('dragover',e=>onDragOverSeg(e,si));
+    wordsDiv.addEventListener('drop',e=>onDropSeg(e,si));
 
     seg.words.forEach((w,wi)=>{
-      const wrap=document.createElement('div');
-      wrap.className='word-wrap';
-
-      // Chip with input
       const chip=document.createElement('div');
       chip.className='word-chip';
+      chip.id=`chip-${si}-${wi}`;
+      chip.draggable=true;
+      chip.addEventListener('dragstart',e=>onDragStart(e,si,wi));
+      chip.addEventListener('dragend',onDragEnd);
+      chip.addEventListener('dragover',e=>onDragOver(e,si,wi));
+      chip.addEventListener('drop',e=>onDrop(e,si,wi));
+
+      const handle=document.createElement('span');
+      handle.className='drag-handle';
+      handle.textContent='⠿';
+      handle.style.cursor='grab';
 
       const inp=document.createElement('input');
       inp.value=w.text;
@@ -506,38 +574,20 @@ function renderSegList(){
         w.text=inp.value;
         inp.style.width=Math.max(22,inp.value.length*7.5)+'px';
       });
+      inp.addEventListener('mousedown',e=>e.stopPropagation());
 
+      const delBtn=document.createElement('button');
+      delBtn.className='del-btn';
+      delBtn.textContent='✕';
+      delBtn.title='Smazat slovo';
+      delBtn.onclick=(e)=>{e.stopPropagation();deleteWord(si,wi);};
+
+      chip.appendChild(handle);
       chip.appendChild(inp);
-      wrap.appendChild(chip);
-
-      // Action buttons
-      const acts=document.createElement('div');
-      acts.className='word-actions';
-
-      if(si>0||wi>0){
-        const bl=document.createElement('button');
-        bl.className='wa left';bl.textContent='←';bl.title='Přesunout do předchozího segmentu';
-        bl.onclick=()=>moveWord(si,wi,-1);
-        acts.appendChild(bl);
-      }
-
-      const bd=document.createElement('button');
-      bd.className='wa del';bd.textContent='✕';bd.title='Smazat slovo';
-      bd.onclick=()=>deleteWord(si,wi);
-      acts.appendChild(bd);
-
-      if(si<segments.length-1||wi<seg.words.length-1){
-        const br=document.createElement('button');
-        br.className='wa right';br.textContent='→';br.title='Přesunout do dalšího segmentu';
-        br.onclick=()=>moveWord(si,wi,1);
-        acts.appendChild(br);
-      }
-
-      wrap.appendChild(acts);
-      wordsDiv.appendChild(wrap);
+      chip.appendChild(delBtn);
+      wordsDiv.appendChild(chip);
     });
 
-    // Add word button
     const addBtn=document.createElement('button');
     addBtn.className='add-word-btn';
     addBtn.textContent='+ slovo';
@@ -572,7 +622,7 @@ function renderCaption(t){
   if(!seg){capText.innerHTML='';return;}
 
   const ow=st.outlineW;
-  // Use paint-order trick for clean outline without halo effect
+  // Clean outline using -webkit-text-stroke + paint-order
   capText.style.cssText=`
     font-family:'${st.fontFamily}',sans-serif;
     font-weight:900;
@@ -583,7 +633,7 @@ function renderCaption(t){
     line-height:1.25;
     word-break:break-word;
     max-width:95%;
-    -webkit-text-stroke:${ow*2}px ${st.outlineColor};
+    -webkit-text-stroke:${ow}px ${st.outlineColor};
     paint-order:stroke fill;
   `;
 
@@ -594,26 +644,27 @@ function renderCaption(t){
     const base=allCol?st.highColor:st.textColor;
 
     if(active){
+      const stroke=`-webkit-text-stroke:${ow}px ${st.outlineColor};paint-order:stroke fill;`;
       switch(wordStyle){
         case 0:
-          return `<span style="color:${st.highColor};-webkit-text-stroke:${ow*2}px ${st.outlineColor}">${txt}</span>`;
+          return `<span style="color:${st.highColor};${stroke}">${txt}</span>`;
         case 1:
           return `<span style="-webkit-text-stroke:0;color:${st.highColor};background:rgba(0,0,0,0.78);border-radius:6px;padding:1px 9px">${txt}</span>`;
         case 2:
           return `<span style="-webkit-text-stroke:0;color:${st.highColor};background:rgba(0,0,0,0.82);border-radius:7px;padding:2px 10px;font-size:${st.fontSize*1.18}px;line-height:1">${txt}</span>`;
         case 3:
-          return `<span style="color:${st.highColor};-webkit-text-stroke:${ow*2}px ${st.outlineColor};font-size:${st.fontSize*1.12}px;line-height:1">${txt}</span>`;
+          return `<span style="color:${st.highColor};${stroke};font-size:${st.fontSize*1.12}px;line-height:1">${txt}</span>`;
         case 4:
-          return `<span style="color:${st.highColor};-webkit-text-stroke:${ow*2}px ${st.outlineColor}">${txt}</span>`;
+          return `<span style="color:${st.highColor};${stroke}">${txt}</span>`;
         case 5:
-          return `<span style="color:${st.highColor};-webkit-text-stroke:${ow*2}px ${st.outlineColor};border-bottom:3px solid ${st.highColor};padding-bottom:1px">${txt}</span>`;
+          return `<span style="color:${st.highColor};${stroke};border-bottom:3px solid ${st.highColor};padding-bottom:1px">${txt}</span>`;
       }
     }
     return `<span style="color:${base}">${txt}</span>`;
   }).join(' ');
 
   capText.innerHTML=wordStyle===4
-    ?`<span style="-webkit-text-stroke:0;display:inline-block;background:rgba(0,0,0,0.72);border-radius:9px;padding:4px 14px;-webkit-text-stroke:${ow*2}px ${st.outlineColor};color:${st.textColor}">${words}</span>`
+    ?`<span style="-webkit-text-stroke:${ow}px ${st.outlineColor};paint-order:stroke fill;display:inline-block;background:rgba(0,0,0,0.72);border-radius:9px;padding:4px 14px;color:${st.textColor}">${words}</span>`
     :words;
 }
 
@@ -686,7 +737,6 @@ async function startExport(){
         if(active&&wordStyle===3)cfs=fs*1.12;
         if(cfs!==fs)ctx.font=`900 ${cfs}px '${st.fontFamily}',sans-serif`;
 
-        // Word background box
         if(active&&(wordStyle===1||wordStyle===2)){
           ctx.fillStyle='rgba(0,0,0,0.82)';ctx.beginPath();
           const bx=cx-ww/2-fs*0.18,by=posY-cfs*0.98,bw=ww+fs*0.36,bh=cfs*1.18;
@@ -695,8 +745,8 @@ async function startExport(){
           ctx.fill();
         }
 
-        // Outline using strokeText (clean, no halo)
-        if(ow>0&&!(active&&(wordStyle===1||wordStyle===2))){
+        const needsOutline=!(active&&(wordStyle===1||wordStyle===2));
+        if(ow>0&&needsOutline){
           ctx.strokeStyle=st.outlineColor;
           ctx.lineWidth=ow*2;
           ctx.strokeText(txt,cx,posY);
@@ -710,7 +760,6 @@ async function startExport(){
           ctx.strokeStyle=st.highColor;ctx.lineWidth=ow*0.5;
           ctx.beginPath();ctx.moveTo(cx-ww/2,posY+fs*0.12);ctx.lineTo(cx+ww/2,posY+fs*0.12);ctx.stroke();
         }
-
         if(cfs!==fs)ctx.font=`900 ${fs}px '${st.fontFamily}',sans-serif`;
         x0+=ww+fs*0.28;
       });
